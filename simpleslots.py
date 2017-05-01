@@ -11,9 +11,17 @@ import time
 import select
 import string
 
-# Choose which MXK to connect to (IP) [in beta]
+# Choose which MXK to connect to (IP) and retry if incorrect input (pretty rough, just makes sure there aren't any letters in it) [in beta]
 
-#mxk = raw_input("What is the IP of the MXK you would like to connect to?: ")
+#validIP = 0
+
+#while(validIP < 1):
+#mxkIP = input ("What is the IP of the MXK you would like to connect to?: ")
+mxkIP = "10.155.2.104"
+
+    #for(x in range len(mxkIP)):
+      #  if(!mxkIP[x].isdigit or !mxkIP[x] == '.')
+        #    print("Invalid IP address. Please re-enter the MXK IP in a numerical format (XXX.XXX.XXX.XXX).
 
 # Set up SSHClient object
 
@@ -26,19 +34,43 @@ ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 # Try to connect to the provided IP, throw error and quit if it fails.
 
 try:
-    ssh.connect('10.155.2.104', username = 'admin', password = 'zhone', port=22)
+    ssh.connect(mxkIP, username = 'admin', password = 'zhone', port=22)
 except paramiko.SSHException:
     print ("Connection Failed")
     quit()
+print("Connection to", mxkIP, "successful!\n")
+
+#console = ssh.invoke_shell()
 
 # Create transport and open session
 
-chan = ssh.get_transport().open_session()
+transport = paramiko.Transport((mxkIP, 22))
+transport.connect(username='admin', password='zhone')
+sender = ssh.invoke_shell()
+command = "dir"
+result = sender.send(command)
+print(result)
+
+#sess = transport.open_session()
+#transport.get_pty()
+#session = sess.invoke_shell()
+#for x in range (0,3):
+  #  result = console.send("dir")
+    #print(result)
+    #print(console.recv(1024))
+
+#command = 'dir'
+#stdin, stdout, stderr = ssh.exec_command(command)
+#output =stdout.read()
+#result = output.decode('ascii')
+#print(result)
+
+#chan = ssh.get_transport().open_session()
 #chan.settimeout(120)
 #chan.set_combine_stderr(True)
-chan.get_pty()
+#chan.get_pty()
 
-chan.exec_command('slots')
+#chan.exec_command('slots')
 
 
 
